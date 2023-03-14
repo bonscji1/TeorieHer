@@ -29,9 +29,9 @@ rules = {
     Action.Scissors: [Action.Paper]  # Scissors beats paper
 }
 # game strategies
-strategies = [Action.Rock, Action.Paper, Action.Scissors]
 
 players = []
+
 
 def init():
     # blbuvzdornost
@@ -47,7 +47,11 @@ def init():
     # create number of players
     for i in range(n_of_players):
         # choose random strategies for players
-        players.append(Player(0, Strategy(random.randint(0, len(Strategy)-1))))
+        players.append(Player(0, getRandomStrategy()))
+
+
+def getRandomStrategy():
+    return Strategy(random.randint(0, len(Strategy) - 1))
 
 
 def determine_payoff(player1_action, player2_action):
@@ -62,7 +66,7 @@ def determine_payoff(player1_action, player2_action):
 
 def play_round():
     for i in range(len(players)):
-        for j in range(i+1, len(players)):
+        for j in range(i + 1, len(players)):
             p1 = players[i]
             p2 = players[j]
             payoffs_for_p1 = determine_payoff(p1.strategy.return_move(), p2.strategy.return_move())
@@ -71,10 +75,6 @@ def play_round():
 
 
 def create_new_generation(oldOnes):
-    #todo
-    # return score to zero for survivors
-    # kill lower half, create new ones, from the ones we got and mutate som of the new oneshighest_score_player.strategy
-
     # calculate number of players to remove
     num_players_to_remove = math.ceil(len(oldOnes) * percentage_to_remove)
 
@@ -92,12 +92,11 @@ def create_new_generation(oldOnes):
     # replenish players by creating children randomly with mutation chance
     for i in enumerate(dead):
         if random.random() < mutation_chance:
-            children.append(Player(0, Strategy(random.randint(0, len(Strategy)-1))))
+            children.append(Player(0, getRandomStrategy()))
         else:
             children.append(survivors[random.randint(0, len(survivors) - 1)])
 
     return survivors + children
-
 
 
 def print_round_stats():
@@ -105,7 +104,7 @@ def print_round_stats():
     mean_score = total_score / len(players)
     worst_player = min(players, key=lambda player: player.score)
     best_player = max(players, key=lambda player: player.score)
-    print(f"round: {current_round+1} \n"
+    print(f"round: {current_round + 1} \n"
           f"mean score of players: {mean_score}\n"
           f"worst player in this round achieved score: {worst_player.score} with strategy: {worst_player.strategy.output()}\n"
           f"best player in this round achieved score: {best_player.score} with strategy: {best_player.strategy.output()}")
@@ -117,7 +116,3 @@ if __name__ == '__main__':
         play_round()
         print_round_stats()
         players = create_new_generation(players)
-
-
-
-
