@@ -1,3 +1,4 @@
+import math
 import random
 
 from Player import Player
@@ -11,11 +12,11 @@ from Strategy import *
 n_of_players = 100
 
 # number of round, needs to be > 0
-num_of_round = 10
+num_of_round = 20
 
 #
 # needs to be between 0 and 1
-survival_percentage = 0.95
+percentage_to_remove = 0.05
 
 #
 # needs to be between 0 and 1
@@ -38,7 +39,7 @@ def init():
         raise ValueError("num_of_round is not valid")
     elif n_of_players < 2:
         raise ValueError("n_of_players is not valid")
-    elif survival_percentage < 0 or survival_percentage > 1:
+    elif percentage_to_remove < 0 or percentage_to_remove > 1:
         raise ValueError("survival_percentage is not valid")
     elif mutation_chance < 0 or mutation_chance > 1:
         raise ValueError("mutation_chance is not valid")
@@ -69,15 +70,35 @@ def play_round():
             p2.score += (-1 * payoffs_for_p1)
 
 
-def create_new_generation():
+def create_new_generation(oldOnes):
     #todo
     # return score to zero for survivors
-    # kill lower half, create new ones, from the ones we got and mutate som of the new ones
-    highest_score_player = max(players, key=lambda player: player.score)
-    for player in players:
+    # kill lower half, create new ones, from the ones we got and mutate som of the new oneshighest_score_player.strategy
+
+    # calculate number of players to remove
+    num_players_to_remove = math.ceil(len(oldOnes) * percentage_to_remove)
+
+    # sort players
+    sorted_ones = sorted(oldOnes, key=lambda player: player.score)
+
+    # remove the players with the lowest scores
+    dead = sorted_ones[:num_players_to_remove]
+    survivors = sorted_ones[num_players_to_remove:]
+    # reset score
+    for player in survivors:
+        player.score = 0
+
+    children = []
+    # replenish players by creating children randomly with mutation chance
+    for i in enumerate(dead):
         if random.random() < mutation_chance:
-            player.strategy = highest_score_player.strategy
-    return players
+            children.append(Player(0, Strategy(random.randint(0, len(Strategy)-1))))
+        else:
+            children.append(survivors[random.randint(0, len(survivors) - 1)])
+
+    return survivors + children
+
+
 
 def print_round_stats():
     total_score = sum(player.score for player in players)
@@ -89,12 +110,13 @@ def print_round_stats():
           f"worst player in this round achieved score: {worst_player.score} with strategy: {worst_player.strategy.output()}\n"
           f"best player in this round achieved score: {best_player.score} with strategy: {best_player.strategy.output()}")
 
+
 if __name__ == '__main__':
     init()
     for current_round in range(num_of_round):
         play_round()
         print_round_stats()
-        players = create_new_generation()
+        players = create_new_generation(players)
 
 
 
