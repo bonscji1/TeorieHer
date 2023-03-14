@@ -9,6 +9,8 @@ from Strategy import *
 n_of_players = 100
 num_of_round = 10
 
+mutation_chance = 0.05
+
 players = []
 
 rules = {
@@ -42,14 +44,16 @@ def play_round():
         for j in range(i+1, len(players)):
             p1 = players[i]
             p2 = players[j]
-            print(f"p1:{i} vs p1:{j}")
             payoffs_for_p1 = determine_payoff(p1.strategy.return_move(), p2.strategy.return_move())
             p1.score += payoffs_for_p1
             p2.score += (-1 * payoffs_for_p1)
 
 
 def create_new_generation():
-    #todo implement
+    highest_score_player = max(players, key=lambda player: player.score)
+    for player in players:
+        if random.random() < mutation_chance:
+            player.strategy = highest_score_player.strategy
     return players
 
 
