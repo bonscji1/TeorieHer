@@ -9,12 +9,6 @@ from Strategy import *
 n_of_players = 100
 num_of_round = 10
 
-# input payoff matrix
-payoffs = [[1, 3],
-           [2, 4]]
-
-probability_of_revision = 0.5
-
 players = []
 
 rules = {
@@ -44,17 +38,23 @@ def determine_payoff(player1_action, player2_action):
 
 
 def play_round():
-    print("NO")
+    for i in range(len(players)):
+        for j in range(i+1, len(players)):
+            p1 = players[i]
+            p2 = players[j]
+            print(f"p1:{i} vs p1:{j}")
+            payoffs_for_p1 = determine_payoff(p1.strategy.return_move(), p2.strategy.return_move())
+            p1.score += payoffs_for_p1
+            p2.score += (-1 * payoffs_for_p1)
 
-    # do i want player to play with all other players? probably
-    p1 = players[0]
-    p2 = players[1]
-    payoffs_for_p1 = determine_payoff(p1.strategy.return_move(), p2.strategy.return_move())
-    p1.score += payoffs_for_p1
-    p2.score += (-1 * payoffs_for_p1)
+
+def create_new_generation():
+    #todo implement
+    return players
 
 
 if __name__ == '__main__':
     init()
     for current_round in range(num_of_round):
         play_round()
+        players = create_new_generation()
