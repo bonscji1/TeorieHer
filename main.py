@@ -28,7 +28,6 @@ rules = {
     Action.Paper: [Action.Rock],  # Paper beats rock
     Action.Scissors: [Action.Paper]  # Scissors beats paper
 }
-# game strategies
 
 players = []
 
