@@ -9,7 +9,7 @@ from Strategy import *
 # Globals
 
 # number of players needs to be > 1
-n_of_players = 100
+n_of_players = 1000
 
 # number of round, needs to be > 0
 num_of_round = 20
